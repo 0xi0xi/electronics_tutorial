@@ -9,6 +9,7 @@ cmake-build-debug-mingw-stm32/cmake
 # CLion
 .idea/
 
+
 # MDK-ARM
 .MDK-ARM
 DebugConfig
