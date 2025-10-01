@@ -127,9 +127,7 @@ int main(void)
     // HAL_Delay(250);
 
     uint32_t now = HAL_GetTick();
-
     is_switched = HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin);
-
     if (is_switched == 1 && pre_is_switched == 0 && now - key_last >= debounce)
     {
       mode = !mode;
