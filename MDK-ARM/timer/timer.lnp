@@ -4,6 +4,7 @@
 "timer\main.o"
 "timer\gpio.o"
 "timer\tim.o"
+"timer\usart_1.o"
 "timer\stm32f4xx_it.o"
 "timer\stm32f4xx_hal_msp.o"
 "timer\stm32f4xx_hal_tim.o"
@@ -21,6 +22,7 @@
 "timer\stm32f4xx_hal_cortex.o"
 "timer\stm32f4xx_hal.o"
 "timer\stm32f4xx_hal_exti.o"
+"timer\stm32f4xx_hal_uart.o"
 "timer\system_stm32f4xx.o"
 --strict --scatter "timer\timer.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols

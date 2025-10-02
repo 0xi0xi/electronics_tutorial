@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -88,34 +89,18 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM1_Init();
+  MX_UART7_Init();
   /* USER CODE BEGIN 2 */
-  //HAL_TIM_Base_Start(&htim1);
-  HAL_TIM_Base_Start_IT(&htim1);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+  uint8_t tx_msg[] = "RoboMaster";
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		// ticks=HAL_GetTick();
-  //
-  //   if (__HAL_TIM_GET_COUNTER(&htim1) > __HAL_TIM_GET_AUTORELOAD(&htim1) / 2)
-  //   {
-  //     HAL_GPIO_WritePin(LED_G_GPIO_Port,LED_G_Pin,GPIO_PIN_RESET);
-  //   }
-  //   else
-  //   {
-  //     HAL_GPIO_WritePin(LED_G_GPIO_Port,LED_G_Pin,GPIO_PIN_SET);
-  //   }
-    uint32_t arr_value = __HAL_TIM_GET_AUTORELOAD(&htim1)+1;
-    uint32_t brightness = arr_value * sinf(4.f * HAL_GetTick() / 1000.f) - 1;
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,brightness);
-
-    // if (HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin) == GPIO_PIN_SET)
-    // {
-    //   HAL_IWDG_Refresh(&hiwdg);
-    // }
+    HAL_UART_Transmit(&huart7,tx_msg,10,1000);
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
