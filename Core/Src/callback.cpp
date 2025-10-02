@@ -26,7 +26,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 extern uint8_t rx_msg[4];
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     if(huart == &huart7)
