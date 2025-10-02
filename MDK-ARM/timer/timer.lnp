@@ -1,12 +1,12 @@
 --cpu=Cortex-M4.fp.sp
 "timer\startup_stm32f427xx.o"
-"timer\callback.o"
 "timer\main.o"
 "timer\gpio.o"
 "timer\tim.o"
 "timer\usart_1.o"
 "timer\stm32f4xx_it.o"
 "timer\stm32f4xx_hal_msp.o"
+"timer\callback.o"
 "timer\stm32f4xx_hal_tim.o"
 "timer\stm32f4xx_hal_tim_ex.o"
 "timer\stm32f4xx_hal_rcc.o"

@@ -45,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint32_t ticks;
+uint8_t rx_msg[4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,7 +92,7 @@ int main(void)
   MX_UART7_Init();
   /* USER CODE BEGIN 2 */
   uint8_t tx_msg[] = "RoboMaster";
-	
+  HAL_UART_Receive_IT(&huart7, rx_msg, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
