@@ -90,6 +90,7 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   //HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_Base_Start_IT(&htim1);
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
   /* USER CODE END 2 */
 
@@ -111,10 +112,10 @@ int main(void)
     uint32_t brightness = arr_value * sinf(4.f * HAL_GetTick() / 1000.f) - 1;
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,brightness);
 
-    if (HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin) == GPIO_PIN_SET)
-    {
-      HAL_IWDG_Refresh(&hiwdg);
-    }
+    // if (HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin) == GPIO_PIN_SET)
+    // {
+    //   HAL_IWDG_Refresh(&hiwdg);
+    // }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

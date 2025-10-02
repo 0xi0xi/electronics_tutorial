@@ -1,5 +1,6 @@
 --cpu=Cortex-M4.fp.sp
 "timer\startup_stm32f427xx.o"
+"timer\callback.o"
 "timer\main.o"
 "timer\gpio.o"
 "timer\tim.o"
