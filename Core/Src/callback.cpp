@@ -2,40 +2,32 @@
 // Created by zhuxinyue on 2025/10/2.
 
 #include "main.h"
-#include "gpio.h"
 #include "tim.h"
-#include "usart.h"
+#include "can.h"
+#include "M3508_Motor.h"
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+extern CAN_RxHeaderTypeDef rx_header;
+extern CAN_TxHeaderTypeDef tx_header;
+extern uint8_t rx_data[8];
+extern uint8_t tx_data[8];
+M3508_Motor Motor(19.2f);
+
+void HAL_CAN_RXFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    if(GPIO_Pin == KEY_Pin)
+    if (hcan->Instance == CAN1)
     {
-        uint32_t arr_value = __HAL_TIM_GetAutoreload(&htim1) + 1;
-        uint32_t brightness = (__HAL_TIM_GetCompare(&htim1,TIM_CHANNEL_2) + 100 ) % arr_value;
-        __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, brightness);
+        HAL_CAN_GetRxMessage(&hcan1,CAN_RX_FIFO0,&rx_header,rx_data);
+        if (rx_header.StdId == 0x202)
+        {
+            Motor.canRxMsgCallback(rx_data);
+        }
     }
 }
 
-uint32_t count = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if(htim == &htim1)
+    if (htim -> Instance == htim6.Instance)
     {
-        count++;
-    }
-}
-
-extern uint8_t rx_msg[4];
-extern uint8_t tx_msg[4];
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if(huart == &huart7)
-    {
-        tx_msg[0] = rx_msg[0];
-        tx_msg[1] = rx_msg[1];
-        tx_msg[2] = rx_msg[2];
-        tx_msg[3] = rx_msg[3];
-		HAL_UART_Transmit_IT(&huart7, tx_msg, 4);
-        HAL_UART_Receive_IT(&huart7,rx_msg,4);
+        HAL_CAN_AddTxMessage(&hcan1,&tx_header,tx_data,CAN_FilterFIFO0);
     }
 }
