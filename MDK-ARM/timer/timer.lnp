@@ -8,6 +8,7 @@
 "timer\tim.o"
 "timer\stm32f4xx_it.o"
 "timer\stm32f4xx_hal_msp.o"
+"timer\pid.o"
 "timer\stm32f4xx_hal_can.o"
 "timer\stm32f4xx_hal_rcc.o"
 "timer\stm32f4xx_hal_rcc_ex.o"

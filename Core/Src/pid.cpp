@@ -4,7 +4,7 @@
 #include <pid.h>
 #include <algorithm>
 
-PID::PID(float kp, float ki, float kd, float i_max, float out_max, float d_filter_k = 1) {
+PID::PID(float kp, float ki, float kd, float i_max, float out_max, float d_filter_k) {
     kp_ = kp;
     ki_ = ki;
     kd_ = kd;
