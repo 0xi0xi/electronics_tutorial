@@ -14,6 +14,7 @@ float linearMapping(int in, int in_min, int in_max, float out_min, float out_max
     return output;
 }
 
+//构造函数
 M3508_Motor::M3508_Motor(const float ratio, const float Kt):
     ratio_(ratio),
     Kt_(Kt),
@@ -28,6 +29,7 @@ M3508_Motor::M3508_Motor(const float ratio, const float Kt):
     output_intensity_(0.0f),
     control_method_(SPEED) {}
 
+//电机解包
 void M3508_Motor::canRxMsgCallback(const uint8_t rx_data[8]) {
     ecd_angle_ = (rx_data[0] << 8) | rx_data[1];
     rotate_speed_ = (rx_data[2] << 8) | rx_data[3];
@@ -87,6 +89,7 @@ void M3508_Motor::handle() {
             break;
 
         case POSITION_SPEED:
+            //添加前馈
             float gravity_compensation = FeedforwardIntensityCalc(fdb_angle_);
             // 外环位置PID得到目标速度
             target_speed_ = ppid_.calc(target_angle_, fdb_angle_) + feedforward_speed_;
@@ -99,6 +102,7 @@ void M3508_Motor::handle() {
     output_intensity_ = std::clamp(output_intensity_, -spid_.out_max_, spid_.out_max_);
 }
 
+//前馈
 float M3508_Motor::FeedforwardIntensityCalc(float current_angle) {
     const float mass = 0.5f;
     const float arm_length = 0.05524f;
@@ -111,6 +115,7 @@ float M3508_Motor::FeedforwardIntensityCalc(float current_angle) {
     return feedforward_current;
 }
 
+//位运算得到发送信息
 void M3508_Motor::GetCurrentData(uint8_t tx_data[8]) {
     int16_t current_to_send = static_cast<int16_t>(output_intensity_ * 16384.0f / 20.0f);
     for (int i = 0; i < 8; i++) {
