@@ -10,6 +10,7 @@
 class M3508_Motor {
 private:
     const float ratio_;
+    const float Kt_; //转矩常数
     float angle_ = 0.f;
     float delta_angle_ = 0.f;
     float ecd_angle_ = 0.f;
@@ -31,12 +32,14 @@ private:
     } control_method_;
 
 public:
-    explicit M3508_Motor(const float ratio);
+    explicit M3508_Motor(const float ratio, const float Kt);
     void canRxMsgCallback(const uint8_t rx_data[8]);
     void SetPosition(float target_position, float feedforward_speed, float feedforward_intensity);
     void SetSpeed(float target_speed, float feedforward_intensity);
     void SetIntensity(float intensity);
     void handle();
+    float FeedforwardIntensityCalc(float current_angle);
+    void GetCurrentData(uint8_t tx_data[8]);
 };
 
 #endif //TIMER_M3508_MOTOR_H

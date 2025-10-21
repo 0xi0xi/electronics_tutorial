@@ -12,10 +12,16 @@ extern uint32_t can_tx_mail_box_;
 extern uint8_t tx_data[8];
 extern uint8_t rx_data[8];
 extern uint8_t stop_flag;
-M3508_Motor Motor(19.2f);
+M3508_Motor Motor(19.2f, 0.3f);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
     if (htim->Instance == htim6.Instance) {
+        Motor.handle();
+        Motor.GetCurrentData(tx_data);
+
+        tx_header.StdId = 0x200;
+        tx_header.DLC = 8;
+
         HAL_CAN_AddTxMessage(&hcan1, &tx_header, tx_data, &can_tx_mail_box_);
     }
 }
