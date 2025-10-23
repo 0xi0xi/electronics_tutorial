@@ -12,6 +12,7 @@ extern uint32_t can_tx_mail_box_;
 extern uint8_t tx_data[8];
 extern uint8_t rx_data[8];
 extern uint8_t stop_flag;
+
 M3508_Motor Motor(19.2f, 0.3f);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
@@ -37,9 +38,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin == KEY_Pin) {
-        HAL_Delay(20);
-        if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_SET)
+        static uint32_t last_tick = 0;
+        uint32_t now = HAL_GetTick();
+
+        if (now - last_tick < 200)
+            return;
+        last_tick = now;
+
+        if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET) {
             stop_flag = !stop_flag;
+        }
     }
 }
-

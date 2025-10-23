@@ -7,6 +7,7 @@
 #include <cmath>
 
 extern uint8_t stop_flag;
+extern float test;
 
 float linearMapping(int in, int in_min, int in_max, float out_min, float out_max) {
     float output;
@@ -18,8 +19,8 @@ float linearMapping(int in, int in_min, int in_max, float out_min, float out_max
 M3508_Motor::M3508_Motor(const float ratio, const float Kt):
     ratio_(ratio),
     Kt_(Kt),
-    spid_(10.0f, 0.1f, 0.2f, 100.0f, 100.0f),
-    ppid_(5.0f, 0.0f, 0.1f, 100.0f, 100.0f),
+    spid_(0.0f, 0.0f, 0.0f, 100.0f, 100.0f),
+    ppid_(0.0f, 0.0f, 0.0f, 100.0f, 100.0f),
     target_angle_(0.0f),
     fdb_angle_(0.0f),
     target_speed_(0.0f),
@@ -27,13 +28,13 @@ M3508_Motor::M3508_Motor(const float ratio, const float Kt):
     feedforward_speed_(0.0f),
     feedforward_intensity_(0.0f),
     output_intensity_(0.0f),
-    control_method_(SPEED) {}
+    control_method_(POSITION_SPEED) {}
 
 //电机解包
 void M3508_Motor::canRxMsgCallback(const uint8_t rx_data[8]) {
     ecd_angle_ = (rx_data[0] << 8) | rx_data[1];
     rotate_speed_ = (rx_data[2] << 8) | rx_data[3];
-    current_ = (rx_data[4] << 8) | rx_data[5];
+    current_ = (int16_t)((rx_data[4] << 8) | rx_data[5]);
     temp_ = rx_data[6];
 
     ecd_angle_ = linearMapping(ecd_angle_, 0, 8191, 0, 360);
@@ -90,16 +91,17 @@ void M3508_Motor::handle() {
 
         case POSITION_SPEED:
             //添加前馈
-            float gravity_compensation = FeedforwardIntensityCalc(fdb_angle_);
+            feedforward_intensity_ = FeedforwardIntensityCalc(angle_);
             // 外环位置PID得到目标速度
             target_speed_ = ppid_.calc(target_angle_, fdb_angle_) + feedforward_speed_;
             // 内环速度PID得到输出
             output_intensity_ = spid_.calc(target_speed_, fdb_speed_);
-            output_intensity_ += feedforward_intensity_ + gravity_compensation;
+            output_intensity_ += feedforward_intensity_;
             break;
     }
 
     output_intensity_ = std::clamp(output_intensity_, -spid_.out_max_, spid_.out_max_);
+    //output_intensity_ = FeedforwardIntensityCalc(angle_);
 }
 
 //前馈
@@ -109,15 +111,14 @@ float M3508_Motor::FeedforwardIntensityCalc(float current_angle) {
     const float g = 9.8f;
 
     float gravity_torque = mass * g * arm_length * sinf(current_angle * 3.14159f / 180.0f);
-    float motor_torque = gravity_torque / ratio_;
-    float feedforward_current = motor_torque / Kt_;
-
+    float feedforward_current = gravity_torque / Kt_;
     return feedforward_current;
 }
 
 //位运算得到发送信息
 void M3508_Motor::GetCurrentData(uint8_t tx_data[8]) {
     int16_t current_to_send = static_cast<int16_t>(output_intensity_ * 16384.0f / 20.0f);
+    test = current_to_send;
     for (int i = 0; i < 8; i++) {
         tx_data[i] = 0;
     }

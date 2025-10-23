@@ -71,6 +71,8 @@ uint8_t rx_data[8];
 uint8_t tx_data[8];
 uint32_t can_tx_mail_box_;
 uint8_t stop_flag = 1;
+
+float test;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
