@@ -7,9 +7,10 @@
 #include <cmath>
 
 extern uint8_t stop_flag;
-extern float test;
+extern int16_t test;
+extern float target_angle;
 
-float linearMapping(int in, int in_min, int in_max, float out_min, float out_max) {
+float linearMapping(float in, float in_min, float in_max, float out_min, float out_max) {
     float output;
     output = out_min + (out_max - out_min) * (in - in_min) / (in_max - in_min);
     return output;
@@ -19,8 +20,8 @@ float linearMapping(int in, int in_min, int in_max, float out_min, float out_max
 M3508_Motor::M3508_Motor(const float ratio, const float Kt):
     ratio_(ratio),
     Kt_(Kt),
-    spid_(0.0f, 0.0f, 0.0f, 100.0f, 100.0f),
-    ppid_(0.0f, 0.0f, 0.0f, 100.0f, 100.0f),
+    spid_(0.021, 0.0f, 0.0007, 20.0f, 1800.0f, 0.03),
+    ppid_(130.0f, 0.2f, 0.007f, 80.0f, 1200.0f, 0.04),
     target_angle_(0.0f),
     fdb_angle_(0.0f),
     target_speed_(0.0f),
@@ -33,7 +34,7 @@ M3508_Motor::M3508_Motor(const float ratio, const float Kt):
 //电机解包
 void M3508_Motor::canRxMsgCallback(const uint8_t rx_data[8]) {
     ecd_angle_ = (rx_data[0] << 8) | rx_data[1];
-    rotate_speed_ = (rx_data[2] << 8) | rx_data[3];
+    rotate_speed_ = (int16_t)((rx_data[2] << 8) | rx_data[3]);
     current_ = (int16_t)((rx_data[4] << 8) | rx_data[5]);
     temp_ = rx_data[6];
 
@@ -49,6 +50,11 @@ void M3508_Motor::canRxMsgCallback(const uint8_t rx_data[8]) {
 
     delta_angle_ = delta_ecd_angle_ / ratio_;
     angle_ += delta_angle_;
+    if (angle_ > 180.0f) {
+        angle_ -= 360.0f;
+    } else if (angle_ < -180.0f) {
+        angle_ += 360.0f;
+    }
 }
 
 void M3508_Motor::SetPosition(float target_position, float feedforward_speed, float feedforward_intensity) {
@@ -84,8 +90,10 @@ void M3508_Motor::handle() {
             break;
 
         case SPEED:
+            feedforward_intensity_ = FeedforwardIntensityCalc(angle_);
             // 内环速度PID
             output_intensity_ = spid_.calc(target_speed_, fdb_speed_);
+            //output_intensity_ = 0;
             output_intensity_ += feedforward_intensity_;
             break;
 

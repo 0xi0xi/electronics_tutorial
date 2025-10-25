@@ -71,8 +71,8 @@ uint8_t rx_data[8];
 uint8_t tx_data[8];
 uint32_t can_tx_mail_box_;
 uint8_t stop_flag = 1;
-
-float test;
+float target_angle = 10.0f;
+int16_t test;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

@@ -15,7 +15,7 @@ public:
         float kd,
         float i_max,
         float out_max,
-        float d_filter_k = 1);
+        float d_filter_k = 0.03);
 
     void reset();
     float calc(float ref, float fdb);

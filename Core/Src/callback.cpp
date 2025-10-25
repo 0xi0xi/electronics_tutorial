@@ -12,11 +12,16 @@ extern uint32_t can_tx_mail_box_;
 extern uint8_t tx_data[8];
 extern uint8_t rx_data[8];
 extern uint8_t stop_flag;
+extern float target_angle;
+
 
 M3508_Motor Motor(19.2f, 0.3f);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
     if (htim->Instance == htim6.Instance) {
+        Motor.SetPosition(target_angle, 0.0f, 0.0f);
+        //Motor.SetSpeed(0.0f, 0.0f);
+        //Motor.SetIntensity(2.0f);
         Motor.handle();
         Motor.GetCurrentData(tx_data);
 

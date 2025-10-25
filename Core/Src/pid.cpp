@@ -45,9 +45,10 @@ float PID::calc(float ref, float fdb) {
     iout_ = ki_ * err_sum_;
     dout_ = err_ - last_err_;
     dout_ = d_filter_k_ * last_dout_ + (1 - d_filter_k_) * dout_; //带一阶低通滤波的微分项
+    dout_ *= kd_;
 
     output_ = pout_ + iout_ + dout_;
-    output_ = std::clamp(output_, -out_max_, output_); //总输出与限幅
+    output_ = std::clamp(output_, -out_max_, out_max_); //总输出与限幅
 
     last_err_ = err_;
     last_dout_ = dout_; //更新状态
