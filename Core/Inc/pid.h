@@ -8,14 +8,14 @@
 class PID {
 public:
     PID():
-        PID(0, 0, 0, 0, 0) {}
+        PID(0, 0, 0, 0, 0, 0) {}
 
     PID(float kp,
         float ki,
         float kd,
         float i_max,
         float out_max,
-        float d_filter_k = 0.03);
+        float d_filter_k);
 
     void reset();
     float calc(float ref, float fdb);
